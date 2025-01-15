@@ -28,4 +28,8 @@ python -m pytest
 
 ## Release
 
+Manual
+```sh
 python -m build
+python -m twine upload dist/*
+```
