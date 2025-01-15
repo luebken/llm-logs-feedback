@@ -1,9 +1,9 @@
+from typing import List, Tuple, Optional
+import sqlite3
+
 import click
 import llm
-import subprocess
-import sys
-import os
-import sqlite3
+
 
 DB_PATH = llm.user_dir() / "logs.db"
 
@@ -12,7 +12,7 @@ def register_commands(cli):
     @cli.command(name="feedback+1")
     @click.argument("comment", required=False, default=None)
     @click.option("prompt_id", "--prompt_id", help="Optional prompt_id for the feedback. Default is the last.", default="None")
-    def feedback_positiv(comment, prompt_id):
+    def feedback_positive(comment, prompt_id):
         """
         Provide positive feedback to the last prompt / response. 
         Add an optional comment.
@@ -27,9 +27,9 @@ def register_commands(cli):
     @cli.command(name="feedback-1")
     @click.argument("comment", required=False, default='')
     @click.option("prompt_id", "--prompt_id", help="Optional prompt_id for the feedback. Default is the last.", default="None")
-    def feedback_negativ(comment, prompt_id):
+    def feedback_negative(comment, prompt_id):
         """
-        Provide positive feedback to the last prompt / response. 
+        Provide negative feedback to the last prompt / response. 
         Add an optional comment.
         
         Example usage:
@@ -40,7 +40,7 @@ def register_commands(cli):
         insert_feedback("-1", comment, prompt_id)
         print_all_feedback()
 
-# Create a timestamp
+# TODO Create a timestamp
 def create_feedback_table():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
