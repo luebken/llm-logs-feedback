@@ -30,10 +30,10 @@ def test_plugin():
         from llm.cli import cli
 
         runner = CliRunner(mix_stderr=False)
-        mock_model.response_text = "MDL Feedback 👍"
+        #TODO test mock_model.response_text = "MDL Feedback 👍"
         result = runner.invoke(
             cli,
-            ["feedback", "👍"],
+            ["feedback+1", "nice one"],
         )
         assert result.exit_code == 0
     finally:
