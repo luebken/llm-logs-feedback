@@ -1,19 +1,18 @@
-import click
-import llm
-import subprocess
-import sys
-import os
+from typing import List, Tuple, Optional
 import sqlite3
 
-#TODO use the correct path
-DB_PATH = os.path.expanduser('~') + "/Library/Application Support/io.datasette.llm/logs.db"
+import click
+import llm
+
+
+DB_PATH = llm.user_dir() / "logs.db"
 
 @llm.hookimpl
 def register_commands(cli):
     @cli.command(name="feedback+1")
     @click.argument("comment", required=False, default=None)
     @click.option("prompt_id", "--prompt_id", help="Optional prompt_id for the feedback. Default is the last.", default="None")
-    def feedback_positiv(comment, prompt_id):
+    def feedback_positive(comment, prompt_id):
         """
         Provide positive feedback to the last prompt / response. 
         Add an optional comment.
@@ -28,9 +27,9 @@ def register_commands(cli):
     @cli.command(name="feedback-1")
     @click.argument("comment", required=False, default='')
     @click.option("prompt_id", "--prompt_id", help="Optional prompt_id for the feedback. Default is the last.", default="None")
-    def feedback_negativ(comment, prompt_id):
+    def feedback_negative(comment, prompt_id):
         """
-        Provide positive feedback to the last prompt / response. 
+        Provide negative feedback to the last prompt / response. 
         Add an optional comment.
         
         Example usage:
@@ -41,7 +40,6 @@ def register_commands(cli):
         insert_feedback("-1", comment, prompt_id)
         print_all_feedback()
 
-# Create a timestamp
 def create_feedback_table():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -50,6 +48,7 @@ def create_feedback_table():
     CREATE TABLE IF NOT EXISTS feedback (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         response_id TEXT NOT NULL,
+        datetime_utc TIMESTAMP DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now')),
         feedback TEXT NOT NULL,
         comment TEXT
     );
