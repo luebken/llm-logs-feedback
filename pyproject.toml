@@ -1,0 +1,30 @@
+[project]
+name = "llm-logs-feedback"
+version = "0.0.1"
+description = "Feedback on LLM logs (prompts & response)"
+readme = "README.md"
+authors = [{name = "Matthias Luebken"}]
+license = {text = "Apache-2.0"}
+classifiers = [
+    "License :: OSI Approved :: Apache Software License"
+]
+requires-python = ">=3.9"
+dependencies = [
+    "llm"
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/luebken/llm-logs-feedback"
+Changelog = "https://github.com/luebken/llm-logs-feedback/releases"
+Issues = "https://github.com/luebken/llm-logs-feedback/issues"
+CI = "https://github.com/luebken/llm-logs-feedback/actions"
+
+[project.entry-points.llm]
+jq = "llm_logs_feedback"
+
+[project.optional-dependencies]
+test = ["pytest"]
