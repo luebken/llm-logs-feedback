@@ -49,6 +49,7 @@ def create_feedback_table():
     CREATE TABLE IF NOT EXISTS feedback (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         response_id TEXT NOT NULL,
+        datetime_utc TIMESTAMP DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now')),
         feedback TEXT NOT NULL,
         comment TEXT
     );
