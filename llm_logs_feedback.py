@@ -5,8 +5,7 @@ import sys
 import os
 import sqlite3
 
-#TODO use the correct path
-DB_PATH = os.path.expanduser('~') + "/Library/Application Support/io.datasette.llm/logs.db"
+DB_PATH = llm.user_dir() / "logs.db"
 
 @llm.hookimpl
 def register_commands(cli):
