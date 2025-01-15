@@ -40,7 +40,6 @@ def register_commands(cli):
         insert_feedback("-1", comment, prompt_id)
         print_all_feedback()
 
-# TODO Create a timestamp
 def create_feedback_table():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
