@@ -12,7 +12,8 @@ def register_commands(cli):
     @cli.command(name="feedback+1")
     @click.argument("comment", required=False, default=None)
     @click.option("prompt_id", "--prompt_id", help="Optional prompt_id for the feedback. Default is the last.", default="None")
-    def feedback_positive(comment, prompt_id):
+    @click.option("-d", "--database", help="Override the default database path", default=None)
+    def feedback_positive(comment, prompt_id, database):
         """
         Provide positive feedback to the last prompt / response. 
         Add an optional comment.
@@ -21,13 +22,15 @@ def register_commands(cli):
         \b
           llm feedback+1 "nice. worked great during refactoring."
         """
-        create_feedback_table()
-        insert_feedback("+1", comment, prompt_id)
-        print_all_feedback()
+        db_path = database if database else DB_PATH
+        create_feedback_table(db_path)
+        insert_feedback("+1", comment, prompt_id, db_path)
+        print_all_feedback(db_path)
     @cli.command(name="feedback-1")
     @click.argument("comment", required=False, default='')
     @click.option("prompt_id", "--prompt_id", help="Optional prompt_id for the feedback. Default is the last.", default="None")
-    def feedback_negative(comment, prompt_id):
+    @click.option("-d", "--database", help="Override the default database path", default=None)
+    def feedback_negative(comment, prompt_id, database):
         """
         Provide negative feedback to the last prompt / response. 
         Add an optional comment.
@@ -36,12 +39,15 @@ def register_commands(cli):
         \b
           llm feedback-1 "not helpful. too lengthy."
         """
-        create_feedback_table()
-        insert_feedback("-1", comment, prompt_id)
-        print_all_feedback()
+        db_path = database if database else DB_PATH
+        create_feedback_table(db_path)
+        insert_feedback("-1", comment, prompt_id, db_path)
+        print_all_feedback(db_path)
 
-def create_feedback_table():
-    conn = sqlite3.connect(DB_PATH)
+def create_feedback_table(db_path=None):
+    if db_path is None:
+        db_path = DB_PATH
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     create_table_query = '''
@@ -57,8 +63,10 @@ def create_feedback_table():
     conn.commit()
     conn.close()
     
-def insert_feedback(feedback, comment, response_id):
-    connection = sqlite3.connect(DB_PATH)
+def insert_feedback(feedback, comment, response_id, db_path=None):
+    if db_path is None:
+        db_path = DB_PATH
+    connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
     
     # Get the latest response ID if not provided
@@ -80,7 +88,7 @@ def insert_feedback(feedback, comment, response_id):
     print("Feedback added successfully.")
     
 
-def print_all_feedback():
+def print_all_feedback(db_path=None):
     print("Here are the latest feedbacks:\n")
 
     query = '''
@@ -90,18 +98,20 @@ def print_all_feedback():
         ORDER BY f.id DESC
         LIMIT 5;
     '''
-    results = fetch_data_from_db(query)
+    results = fetch_data_from_db(query, db_path)
     for row in results:
         feedback, comment, prompt = row
         print(f" Prompt: {prompt}")
         print(f"  Feedback: {feedback}, Comment: {comment}\n")
         
-def fetch_data_from_db(query):
+def fetch_data_from_db(query, db_path=None):
+    if db_path is None:
+        db_path = DB_PATH
     connection = None
     results = []
 
     try:
-        connection = sqlite3.connect(DB_PATH)
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.execute(query)
         results = cursor.fetchall()
